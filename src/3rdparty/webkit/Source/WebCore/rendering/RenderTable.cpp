@@ -37,7 +37,6 @@
 #include "RenderLayer.h"
 #include "RenderTableCell.h"
 #include "RenderTableCol.h"
-#include "RenderTableRow.h"
 #include "RenderTableSection.h"
 #include "RenderView.h"
 
@@ -330,7 +329,7 @@ void RenderTable::layout()
     if (m_caption)
         m_caption->layoutIfNeeded();
 
-    // Bump table to next page if we can't fit the caption, thead and first body cell if first row has page-break-inside: avoid
+    // Bump table to next page if we can't fit the caption, thead and first body cell
     setPaginationStrut(0);
     if (view()->layoutState()->pageLogicalHeight()) {
         LayoutState* layoutState = view()->layoutState();
@@ -346,9 +345,7 @@ void RenderTable::layout()
                 if (m_firstBody->numRows() > 0 && m_firstBody->numColumns() > 0) {
                     RenderTableCell* firstCell = m_firstBody->primaryCellAt(0, 0);
                     if (firstCell) {
-                        RenderTableRow *firstRow = toRenderTableRow(firstCell->parent());
-                        if (firstRow && firstRow->style()->pageBreakInside() == PBAVOID)
-                            requiredHeight += firstCell->contentLogicalHeight() + firstCell->paddingTop(false) + firstCell->paddingBottom(false) + vBorderSpacing();
+                        requiredHeight += firstCell->contentLogicalHeight() + firstCell->paddingTop(false) + firstCell->paddingBottom(false) + vBorderSpacing();
                     }
                 }
             }

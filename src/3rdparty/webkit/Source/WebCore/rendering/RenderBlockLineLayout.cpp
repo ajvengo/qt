@@ -34,7 +34,6 @@
 #include "RenderListMarker.h"
 #include "RenderRubyRun.h"
 #include "RenderView.h"
-#include "RenderTableRow.h"
 #include "Settings.h"
 #include "TextBreakIterator.h"
 #include "TextRun.h"
@@ -817,15 +816,6 @@ RootInlineBox* RenderBlock::createLineBoxesFromBidiRuns(BidiRunList<BidiRun>& bi
     return lineBox;
 }
 
-static inline bool isTableCellWithPageBreakInsideAvoid(RenderBlock *block)
-{
-    if (!block->isTableCell())
-        return false;
-
-    RenderTableRow *row = toRenderTableRow(block->parent());
-    return row && row->style()->pageBreakInside() == PBAVOID;
-}
-
 void RenderBlock::layoutRunsAndFloats(bool fullLayout, bool hasInlineChild, Vector<FloatWithRect>& floats, int& repaintLogicalTop, int& repaintLogicalBottom)
 {
     // We want to skip ahead to the first dirty line
@@ -966,8 +956,8 @@ void RenderBlock::layoutRunsAndFloats(bool fullLayout, bool hasInlineChild, Vect
                     repaintLogicalBottom = max(repaintLogicalBottom, lineBox->logicalBottomVisualOverflow());
                 }
 
-                // table cell pagination in case of page-break-inside: avoid is handled in RenderTableSection
-                if (paginated && !isTableCellWithPageBreakInsideAvoid(this)) {
+                // table cell pagination is handled in RenderTableSection
+                if (paginated && !isTableCell()) {
                     int adjustment = 0;
                     adjustLinePositionForPagination(lineBox, adjustment);
                     if (adjustment) {
